@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileContent;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
@@ -59,6 +60,7 @@ public class VfsLineageWriter implements ILineageWriter {
   private IGraphWriter graphWriter = new GraphMLWriter();
   private String outputFolder = DEFAULT_OUTPUT_FOLDER;
   private String outputStrategy = DEFAULT_OUTPUT_STRATEGY;
+  private boolean writeExecutionProfile = true;
 
   protected static SimpleDateFormat dateFolderFormat = new SimpleDateFormat( "YYYYMMdd" );
 
@@ -71,15 +73,19 @@ public class VfsLineageWriter implements ILineageWriter {
 
   @Override
   public void outputExecutionProfile( LineageHolder holder ) throws IOException {
-    if ( holder != null ) {
+    if ( holder != null && writeExecutionProfile ) {
       IExecutionProfile profile = holder.getExecutionProfile();
       if ( profile != null ) {
-        try ( OutputStream fis = getProfileOutputStream( holder ) ) {
-          if ( fis != null ) {
-            ExecutionProfileUtil.outputExecutionProfile( fis, profile );
+        OutputStream fos = null;
+        try {
+          fos = getProfileOutputStream( holder );
+          if ( fos != null ) {
+            ExecutionProfileUtil.outputExecutionProfile( fos, profile );
           } else {
             log.debug( Messages.getString( "DEBUG.noProfileOutputStream" ) );
           }
+        } finally {
+          IOUtils.closeQuietly( fos );
         }
       }
     }
@@ -90,12 +96,16 @@ public class VfsLineageWriter implements ILineageWriter {
     if ( holder != null ) {
       IMetaverseBuilder builder = holder.getMetaverseBuilder();
       if ( builder != null ) {
-        try ( OutputStream fos = getGraphOutputStream( holder ) ) {
+        OutputStream fos = null;
+        try {
+          fos = getGraphOutputStream( holder );
           if ( fos != null ) {
             graphWriter.outputGraph( builder.getGraph(), fos );
           } else {
             log.debug( Messages.getString( "DEBUG.noGraphOutputStream" ) );
           }
+        } finally {
+          IOUtils.closeQuietly( fos );
         }
       }
     }
@@ -244,6 +254,14 @@ public class VfsLineageWriter implements ILineageWriter {
       ext = ".txt";
     }
     return createOutputStream( holder, ext );
+  }
+
+  public boolean isWriteExecutionProfile() {
+    return writeExecutionProfile;
+  }
+
+  public void setWriteExecutionProfile( boolean writeExecutionProfile ) {
+    this.writeExecutionProfile = writeExecutionProfile;
   }
 
   /**

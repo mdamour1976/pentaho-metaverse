@@ -25,6 +25,28 @@
     </service-properties>
   </service>
 
+  <!-- TransSaved extension point -->
+  <bean id="transSaved" scope="singleton" class="org.pentaho.metaverse.analyzer.kettle.extensionpoints.trans.TransSavedExtensionPoint"/>
+  <bean id="transSavedPlugin" scope="singleton" class="org.pentaho.di.osgi.OSGIPlugin">
+    <property name="mainType" value="org.pentaho.di.core.extension.ExtensionPointInterface"/>
+    <property name="name" value="TransAfterSave"/>
+    <property name="ID" value="transSavedLineageGraph"/>
+    <property name="description" value="Creates a lineage graph for the transformation after it is saved"/>
+    <property name="pluginTypeInterface" value="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+    <property name="category" value="Data Lineage"/>
+    <property name="classToBeanMap">
+      <map>
+        <entry key="org.pentaho.di.core.extension.ExtensionPointInterface" value="transSaved"/>
+      </map>
+    </property>
+  </bean>
+  <service id="transSavedPluginService" interface="org.pentaho.di.core.plugins.PluginInterface" ref="transSavedPlugin">
+    <service-properties>
+      <entry key="PluginType" value="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+    </service-properties>
+  </service>
+
+
   <!-- TransChanged extension point -->
   <bean id="transChanged" scope="singleton" class="org.pentaho.metaverse.analyzer.kettle.extensionpoints.trans.TransChangedExtensionPoint"/>
   <bean id="transChangedPlugin" scope="singleton" class="org.pentaho.di.osgi.OSGIPlugin">

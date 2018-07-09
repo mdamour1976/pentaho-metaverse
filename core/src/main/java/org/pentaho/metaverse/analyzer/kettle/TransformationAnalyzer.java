@@ -204,6 +204,7 @@ public class TransformationAnalyzer extends BaseDocumentAnalyzer {
             stepNode = defaultStepAnalyzer.analyze( stepDescriptor, getBaseStepMetaFromStepMeta( stepMeta ) );
           }
           if ( stepNode != null ) {
+            stepNode.setProperty( "stepDescription", stepMeta.getDescription() );
             metaverseBuilder.addLink( node, DictionaryConst.LINK_CONTAINS, stepNode );
           }
         }

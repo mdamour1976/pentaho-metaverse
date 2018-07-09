@@ -64,6 +64,13 @@ public interface ILineageWriter {
    */
   void setOutputStrategy( String strategy );
 
+  default boolean isWriteExecutionProfile() {
+    return true;
+  }
+
+  default void setWriteExecutionProfile( boolean writeExecutionProfile ) {
+  }
+
   /**
    * Method called on the writer to do any cleanup of the output artifacts, folders, etc.
    *

@@ -107,7 +107,7 @@ public class TransLineageHolderMap {
     }
   }
 
-  protected void setDefaultMetaverseBuilder( IMetaverseBuilder builder ) {
+  public void setDefaultMetaverseBuilder( IMetaverseBuilder builder ) {
     defaultMetaverseBuilder = builder;
   }
 }
